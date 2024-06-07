@@ -1,0 +1,19 @@
+<!-- banking/templates/banking/view_balance.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Balance</title>
+</head>
+<body>
+    <h1>View Account Balance</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">View Balance</button>
+    </form>
+    {% if balance is not None %}
+        <h2>Account Balance: ${{ balance }}</h2>
+    {% endif %}
+    <a href="{% url 'index' %}">Back to Home</a>
+</body>
+</html>
