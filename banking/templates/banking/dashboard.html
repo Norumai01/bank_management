@@ -1,0 +1,17 @@
+<!-- banking/templates/banking/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ customer.user.first_name }}</h1>
+    <h2>Your Accounts</h2>
+    <ul>
+        {% for account in accounts %}
+            <li>{{ account.account_type }}: ${{ account.balance }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'index' %}">Back to Home</a>
+</body>
+</html>
