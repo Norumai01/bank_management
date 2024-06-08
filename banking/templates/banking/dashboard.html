@@ -12,6 +12,9 @@
             <li>{{ account.account_type }}: ${{ account.balance }}</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'index' %}">Back to Home</a>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <p><a href="{% url 'create_account' %}">Create Account</a></p>
+    <p><a href="{% url 'perform_transaction' %}">Perform Transaction</a></p>
+    <p><a href="{% url 'index' %}">Back to Home</a></p>
 </body>
 </html>

@@ -4,10 +4,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomerForm, AccountForm, TransactionForm, BalanceForm, UserRegisterationForm
 from django.contrib.auth.decorators import login_required
 from .models import Account
+from django.contrib.auth.views import LogoutView
 from django.db import IntegrityError
 
 def index(request):
-    return render(request, 'banking/index.html')
+    if request.user.is_authenticated:
+        return redirect('customer_dashboard')
+    else:
+        return redirect('login')
 
 def register(request):
     if request.method == 'POST':
@@ -53,6 +57,10 @@ def user_login(request):
         form = AuthenticationForm()
     return render(request, 'banking/login.html', {'form': form})
 
+@login_required
+def logout_view(request):
+    return render(request, 'banking/logout.html')
+
 def create_customer(request):
     if request.method == 'POST':
         form = CustomerForm(request.POST)
@@ -63,6 +71,7 @@ def create_customer(request):
         form = CustomerForm()
     return render(request, 'banking/create_customer.html', {'form': form})
 
+@login_required
 def create_account(request):
     if request.method == 'POST':
         form = AccountForm(request.POST)
@@ -73,6 +82,7 @@ def create_account(request):
         form = AccountForm()
     return render(request, 'banking/create_account.html', {'form': form})
 
+@login_required
 def perform_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
@@ -94,6 +104,7 @@ def perform_transaction(request):
         form = TransactionForm()
     return render(request, 'banking/perform_transaction.html', {'form': form})
 
+@login_required
 def view_balance(request):
     balance = None
     if request.method == 'POST':
