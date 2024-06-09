@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomerForm, AccountForm, TransactionForm, BalanceForm, UserRegisterationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Account
 from django.contrib.auth.views import LogoutView
 from django.db import IntegrityError
 
 def index(request):
     if request.user.is_authenticated:
-        return redirect('customer_dashboard')
+        if request.user.is_superuser:
+            return redirect('admin_dashboard')
+        else:
+            return redirect('customer_dashboard')
     else:
         return redirect('login')
 
@@ -52,15 +55,25 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('customer_dashboard')
+                if user.is_superuser:
+                    return redirect('admin_dashboard')
+                else:
+                    return redirect('customer_dashboard')
     else:
         form = AuthenticationForm()
     return render(request, 'banking/login.html', {'form': form})
 
 @login_required
+@user_passes_test(lambda u: u.is_superuser)
+def admin_dashboard(request):
+    return render(request, 'banking/admin_dashboard.html')
+
+@login_required
 def logout_view(request):
     return render(request, 'banking/logout.html')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def create_customer(request):
     if request.method == 'POST':
         form = CustomerForm(request.POST)
@@ -74,18 +87,18 @@ def create_customer(request):
 @login_required
 def create_account(request):
     if request.method == 'POST':
-        form = AccountForm(request.POST)
+        form = AccountForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
             return redirect('index')
     else:
-        form = AccountForm()
+        form = AccountForm(user=request.user)
     return render(request, 'banking/create_account.html', {'form': form})
 
 @login_required
 def perform_transaction(request):
     if request.method == 'POST':
-        form = TransactionForm(request.POST)
+        form = TransactionForm(request.POST, user=request.user)
         if form.is_valid():
             transaction = form.save(commit=False)
             account = transaction.account
@@ -101,7 +114,7 @@ def perform_transaction(request):
             transaction.save()
             return redirect('index')
     else:
-        form = TransactionForm()
+        form = TransactionForm(user=request.user)
     return render(request, 'banking/perform_transaction.html', {'form': form})
 
 @login_required

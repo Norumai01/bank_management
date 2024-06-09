@@ -22,6 +22,12 @@ class CustomerForm(forms.ModelForm):
         fields = ['phone']
 
 class AccountForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(CustomerForm, self).__init__(*args, **kwargs)
+        if user and not user.is_superuser:
+            self.fields['customer'].queryset = Account.objects.filter(customer=user.customer) # Bug: Drop-down menu shows name and account types dupes.
+    
     class Meta:
         model = Account
         fields = ['customer', 'account_type', 'balance']
@@ -36,6 +42,12 @@ class AccountForm(forms.ModelForm):
         return cleaned_data
 
 class TransactionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(TransactionForm, self).__init__(*args, **kwargs)
+        if user and not user.is_superuser:
+            self.fields['account'].queryset = Account.objects.filter(customer=user.customer)
+    
     class Meta:
         model = Transaction
         fields = ['account', 'transaction_type', 'amount']
