@@ -24,9 +24,9 @@ class CustomerForm(forms.ModelForm):
 class AccountForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(CustomerForm, self).__init__(*args, **kwargs)
+        super(AccountForm, self).__init__(*args, **kwargs)
         if user and not user.is_superuser:
-            self.fields['customer'].queryset = Account.objects.filter(customer=user.customer) # Bug: Drop-down menu shows name and account types dupes.
+            self.fields['customer'].queryset = Customer.objects.filter(user=user) 
     
     class Meta:
         model = Account
