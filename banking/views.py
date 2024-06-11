@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from .forms import CustomerForm, AccountForm, TransactionForm, BalanceForm, UserRegisterationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Account
@@ -76,13 +77,28 @@ def logout_view(request):
 @user_passes_test(lambda u: u.is_superuser)
 def create_customer(request):
     if request.method == 'POST':
-        form = CustomerForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('index')
+        user_form = UserRegisterationForm(request.POST)
+        customer_form = CustomerForm(request.POST)
+        if user_form.is_valid() and customer_form.is_valid():
+            return admin_create_user_and_customer(request, user_form, customer_form)
     else:
-        form = CustomerForm()
-    return render(request, 'banking/create_customer.html', {'form': form})
+        user_form = UserRegisterationForm()
+        customer_form = CustomerForm()
+    return render(request, 'banking/create_customer.html', {'user_form': user_form, 'customer_form': customer_form})
+
+def admin_create_user_and_customer(request, user_form, customer_form):
+    try:
+        new_user = user_form.save(commit=False)
+        new_user.set_password(user_form.cleaned_data['password'])
+        new_user.save()
+        new_customer = customer_form.save(commit=False)
+        new_customer.user = new_user
+        new_customer.save()
+        messages.success(request, 'Account created succesfully.')
+        return render(request, 'banking/create_customer.html', {'user_form': user_form, 'customer_form': customer_form})
+    except IntegrityError:
+        user_form.add_error(None, 'A user with that email or phone number already exists.')
+        return render(request, 'banking/create_customer.html', {'user_form': user_form, 'customer_form': customer_form})
 
 @login_required
 def create_account(request):
