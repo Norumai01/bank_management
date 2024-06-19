@@ -1,0 +1,15 @@
+<!-- banking/templates/banking/admin_dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p><a href="{% url 'create_customer' %}">Create Customer</a></p>
+    <p><a href="{% url 'create_account' %}">Create Account</a></p>
+    <p><a href="{% url 'perform_transaction' %}">Perform Transaction</a></p>
+    <p><a href="{% url 'view_balance' %}">View Balance</a></p>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+</body>
+</html>

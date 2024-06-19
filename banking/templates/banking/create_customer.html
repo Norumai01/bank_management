@@ -8,9 +8,18 @@
     <h1>Create Customer</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ user_form.as_p }}
+        {{ customer_form.as_p }}
         <button type="submit">Create</button>
     </form>
-    <a href="{% url 'index' %}">Back to Home</a>
+
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                window.alert("{{ message|escapejs }}")
+            {% endfor %}
+        {% endif %}
+    </script>
+    <p><a href="{% url 'index' %}">Back to Home</a></p>
 </body>
 </html>

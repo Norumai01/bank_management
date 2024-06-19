@@ -1,0 +1,19 @@
+<!-- banking/templates/banking/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ customer.user.first_name }}</h1>
+    <h2>Your Accounts</h2>
+    <ul>
+        {% for account in accounts %}
+            <li>{{ account.account_type }}: ${{ account.balance }}</li>
+        {% endfor %}
+    </ul>
+    <p><a href="{% url 'create_account' %}">Create Account</a></p>
+    <p><a href="{% url 'perform_transaction' %}">Perform Transaction</a></p>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+</body>
+</html>
